@@ -1,0 +1,41 @@
+CHANGELOG
+=========
+
+Version update: June 2026
+--------------------------
+
+Summary
+-------
+Added compatibility fix for the CelesTrak GP API format change. The
+satellite_tle library now returns orbital data as a CSV-style tuple rather
+than a classic Three-Line Element (TLE) string. A new conversion function
+has been added to restore the expected TLE format, and getTle() has been
+updated to use it.
+
+New file: csv_to_tle.py
+-----------------------
+Contains the function csv_to_tle(tle_tuple), which converts the new
+CelesTrak GP API output format into a standard 3-line TLE string.
+
+  Input:  3-element tuple returned by fetch_tle_from_celestrak(), where
+          element [0] is a CSV header row, element [1] is the data row,
+          and element [2] is an empty string.
+
+  Output: Classic 3-line TLE string (name / line 1 / line 2), compatible
+          with packages such as sgp4.
+
+Additional details:
+  - NORAD catalog IDs above 59999 are automatically capped to 59999 to
+    maintain compatibility with packages that use 5-digit ID fields.
+  - TLE line checksums are computed from scratch on the assembled output,
+    so they remain valid even when the NORAD ID is substituted.
+  - The international designator, epoch, mean motion derivatives, BSTAR
+    drag term, and eccentricity are all reformatted to match the fixed-
+    width TLE column specification.
+
+Changed file: tle_download.py
+------------------------------
+Updated getTle() to import and call csv_to_tle() after fetching data from
+CelesTrak, replacing the previous direct join of the fetched tuple. The
+cached TLE files on disk are unaffected; the conversion is applied only
+to freshly downloaded data before it is written and returned.

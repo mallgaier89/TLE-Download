@@ -8,6 +8,7 @@ def getTle(norad_id):
    from datetime import datetime, date
    from pathlib import Path
    from satellite_tle import fetch_tle_from_celestrak
+   from csv_to_tle import csv_to_tle
    
    # Test satellite stuff:
    # Norad ID:
@@ -53,6 +54,7 @@ def getTle(norad_id):
             fetched_tle = fetch_tle_from_celestrak(norad_id)
             # Get it formatted:
             tle_str = '\n'.join(fetched_tle)
+            tle_str = csv_to_tle(fetched_tle) 
    
             # Write it to a file in current folder:
             with open(f_name, "w") as f:
@@ -71,7 +73,7 @@ def getTle(norad_id):
       fetched_tle = fetch_tle_from_celestrak(norad_id)
       # Get it formatted:
       tle_str = '\n'.join(fetched_tle)
-   
+      tle_str = csv_to_tle(fetched_tle) 
       
       # Write it to a file in current folder:
       with open(f_name, "w") as f:
